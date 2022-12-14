@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Query, Render } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Redirect,
+  Render,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { CatDto } from './Cat.dto';
 import db from './db';
@@ -10,12 +18,12 @@ export class AppController {
   @Get()
   @Render('index')
   async listcats(
-    @Query('szem_szin')
-    szem_szin = 'zöld',
+    @Query('search')
+    szem_szin = '',
   ) {
     const [rows] = await db.execute(
-      'SELECT id, suly, szem_szin FROM macskak WHERE szem_szin LIKE(?) ORDER BY suly DESC',
-      [szem_szin],
+      'SELECT id, suly, szem_szin FROM macskak WHERE szem_szin LIKE ? ORDER BY suly DESC',
+      ['%' + szem_szin + '%'],
     );
     return {
       cats: rows,
@@ -25,7 +33,26 @@ export class AppController {
 
   @Get('cats/new')
   @Render('form')
-  newPaintingForm() {
+  newCatForm() {
     return { link: '/' };
+  }
+
+  @Post('cats/new')
+  @Redirect()
+  async newCat(@Body() cat: CatDto) {
+    if (
+      cat.suly > 0 &&
+      cat.suly !== null &&
+      cat.szem_szin !== null &&
+      cat.szem_szin !== ''
+    ) {
+      const [result]: any = await db.execute(
+        'INSERT INTO macskak (suly, szem_szin) VALUES (?, ?)',
+        [cat.suly, cat.szem_szin],
+      );
+    }
+    return {
+      url: '/',
+    };
   }
 }
