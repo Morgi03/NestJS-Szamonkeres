@@ -40,17 +40,10 @@ export class AppController {
   @Post('cats/new')
   @Redirect()
   async newCat(@Body() cat: CatDto) {
-    if (
-      cat.suly > 0 &&
-      cat.suly !== null &&
-      cat.szem_szin !== null &&
-      cat.szem_szin !== ''
-    ) {
-      const [result]: any = await db.execute(
-        'INSERT INTO macskak (suly, szem_szin) VALUES (?, ?)',
-        [cat.suly, cat.szem_szin],
-      );
-    }
+    const [result]: any = await db.execute(
+      'INSERT INTO macskak (suly, szem_szin) VALUES (?, ?)',
+      [cat.suly, cat.szem_szin],
+    );
     return {
       url: '/',
     };
