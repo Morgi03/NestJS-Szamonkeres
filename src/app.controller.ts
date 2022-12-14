@@ -19,12 +19,13 @@ export class AppController {
     );
     return {
       cats: rows,
+      link: 'cats/new',
     };
   }
 
   @Get('cats/new')
   @Render('form')
   newPaintingForm() {
-    return {};
+    return { link: '/' };
   }
 }
